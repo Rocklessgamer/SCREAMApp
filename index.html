@@ -382,5 +382,32 @@
             alert('Form submitted!\n\nData:\n' + output);
         };
     </script>
+    // Add this script tag just before the closing </body> tag
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      // Modify the form submission handler
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        let output = '';
+        for (let [key, value] of formData.entries()) {
+          output += `${key}\t${value}\n`;
+        }
+        
+        // Create a container for the QR code
+        const qrContainer = document.createElement('div');
+        qrContainer.id = 'qrcode';
+        document.body.appendChild(qrContainer);
+    
+        // Generate the QR code
+        new QRCode(document.getElementById("qrcode"), {
+          text: output,
+          width: 256,
+          height: 256
+        });
+    
+        alert('Form submitted! QR Code generated below.');
+      };
+    </script>
 </body>
 </html>
