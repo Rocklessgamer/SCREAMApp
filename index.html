@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouting PASS 2024</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .radio-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 80px;
+        }
+        .radio-option input[type="radio"] {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="page-title">Scouting PASS 2024</h1>
+    <form id="scouting-form"></form>
+
+    <script>
+        var config_data = `
+        {
+          "dataFormat": "tsv",
+          "title": "Scouting PASS 2024",
+          "page_title": "Crescendo",
+          "checkboxAs": "10",
+          "prematch": [
+            { "name": "Scouter Initials",
+              "code": "s",
+              "type": "scouter",
+              "size": 5,
+              "maxSize": 5,
+              "required": "true"
+            },
+            { "name": "Event",
+              "code": "e",
+              "type": "event",
+              "defaultValue": "2023tnkn",
+              "required": "true"
+            },
+            { "name": "Match Level",
+              "code": "l",
+              "type": "level",
+              "choices": {
+                "qm": "Quals",
+                "sf": "Semifinals",
+                "f": "Finals"
+              },
+              "defaultValue": "qm",
+              "required": "true"
+            },
+            { "name": "Match #",
+              "code": "m",
+              "type": "match",
+              "min": 1,
+              "max": 150,
+              "required": "true"
+            },
+            { "name": "Robot",
+              "code": "r",
+              "type": "robot",
+              "choices": {
+                "r1": "Red-1",
+                "b1": "Blue-1",
+                "r2": "Red-2",
+                "b2": "Blue-2",
+                "r3": "Red-3",
+                "b3": "Blue-3"
+              },
+              "required":"true"
+            },
+            { "name": "Team #",
+              "code": "t",
+              "type": "team",
+              "min": 1,
+              "max": 99999
+            },
+            { "name": "Auto Start Position",
+              "code": "as",
+              "type": "clickable_image",
+              "filename": "2024/field_image.png",
+              "clickRestriction": "one",
+              "allowableResponses": "1 12 13 24 25 36 37 48 49 60 61 72",
+              "shape": "circle 5 black red true"
+            }
+          ],
+          "auton": [
+            { "name": "Leave Starting Zone",
+              "code": "al",
+              "type": "bool"
+            },
+            { "name": "Amp Scores",
+              "code": "aas",
+              "type": "counter"
+            },
+            { "name": "Speaker Scores",
+              "code": "ass",
+              "type": "counter"
+            }
+          ],
+          "teleop": [
+            { "name": "Amp Scores",
+              "code": "tas",
+              "type": "counter"
+            },
+            { "name": "Speaker Scores",
+              "code": "tss",
+              "type": "counter"
+            },
+            { "name": "Times Amplified",
+              "code": "tta",
+              "type": "counter"
+            },
+            { "name": "Pickup From",
+              "code": "tpu",
+              "type": "radio",
+              "choices": {
+                "s": "Source",
+                "f": "Floor",
+                "b": "Both",
+                "x": "Not Attempted"
+              },
+              "defaultValue": "x"
+            }
+          ],
+          "endgame": [
+            { "name": "Stage Timer",
+              "code": "dt",
+              "type": "timer"
+            },
+            { "name": "Final Status",
+              "code": "fs",
+              "type":"radio",
+              "choices": {
+                "p": "Parked",
+                "o": "Onstage",
+                "s": "Onstage (Spotlit)",
+                "h": "Harmony",
+                "a": "Attempted but failed",
+                "x": "Not attempted"
+              },
+              "defaultValue": "x"
+            },
+            { "name": "Note in Trap",
+              "code": "nit",
+              "type": "bool"
+            }
+          ],
+          "postmatch": [
+            { "name": "Driver Skill",
+              "code": "ds",
+              "type": "radio",
+              "choices": {
+                "n": "Not Effective",
+                "a": "Average",
+                "v": "Very Effective",
+                "x": "Not Observed"
+              },
+              "defaultValue": "x"
+            },
+            { "name": "Defense Rating",
+              "code": "dr",
+              "type": "radio",
+              "choices": {
+                "b": "Below Average",
+                "a": "Average",
+                "g": "Good",
+                "e": "Excellent",
+                "x": "Did not play defense"
+              },
+              "defaultValue": "x"
+            },
+            { "name": "Speed Rating",
+              "code": "sr",
+              "type": "radio",
+              "choices": {
+                "1": "1 (slow)",
+                "2": "2",
+                "3": "3",
+                "4": "4",
+                "5": "5 (fast)"
+              },
+              "defaultValue":"3"
+            },
+            { "name": "Died/Immobilized",
+              "code": "die",
+              "type": "bool"
+            },
+            { "name": "Tippy (almost tipped over)",
+              "code": "tip",
+              "type": "bool"
+            },
+            { "name": "Dropped Notes (>2)",
+              "code": "dn",
+              "type": "bool"
+            },
+            { "name": "Make good alliance partner?",
+              "tooltip": "Would you want this robot on your alliance in eliminations?",
+              "code": "all",
+              "type": "bool"
+            },
+            { "name": "Comments",
+              "code": "co",
+              "type": "text",
+              "size": 15,
+              "maxSize": 55
+            }
+          ]
+        }`;
+
+        const config = JSON.parse(config_data);
+        const form = document.getElementById('scouting-form');
+
+        document.getElementById('page-title').textContent = config.page_title;
+
+        function createFormElement(item) {
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            const label = document.createElement('label');
+            label.textContent = item.name;
+            div.appendChild(label);
+
+            let input;
+            switch (item.type) {
+                case 'scouter':
+                case 'event':
+                case 'match':
+                case 'team':
+                    input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = item.code;
+                    input.required = item.required === 'true';
+                    if (item.defaultValue) input.value = item.defaultValue;
+                    if (item.size) input.size = item.size;
+                    if (item.maxSize) input.maxLength = item.maxSize;
+                    break;
+                case 'level':
+                case 'robot':
+                case 'radio':
+                    input = document.createElement('div');
+                    input.className = 'radio-group';
+                    for (let key in item.choices) {
+                        const radioDiv = document.createElement('div');
+                        radioDiv.className = 'radio-option';
+                        const radioLabel = document.createElement('label');
+                        radioLabel.textContent = item.choices[key];
+                        const radioInput = document.createElement('input');
+                        radioInput.type = 'radio';
+                        radioInput.name = item.code;
+                        radioInput.value = key;
+                        radioInput.id = `${item.code}_${key}`;
+                        if (key === item.defaultValue) radioInput.checked = true;
+                        radioDiv.appendChild(radioLabel);
+                        radioDiv.appendChild(radioInput);
+                        input.appendChild(radioDiv);
+                    }
+                    break;
+                case 'bool':
+                    input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.name = item.code;
+                    break;
+                case 'counter':
+                    input = document.createElement('div');
+                    const decreaseBtn = document.createElement('button');
+                    decreaseBtn.textContent = '-';
+                    decreaseBtn.type = 'button';
+                    const increaseBtn = document.createElement('button');
+                    increaseBtn.textContent = '+';
+                    increaseBtn.type = 'button';
+                    const counterDisplay = document.createElement('span');
+                    counterDisplay.textContent = '0';
+                    counterDisplay.style.margin = '0 10px';
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = item.code;
+                    hiddenInput.value = '0';
+                    decreaseBtn.onclick = () => {
+                        let value = parseInt(hiddenInput.value);
+                        if (value > 0) {
+                            value--;
+                            hiddenInput.value = value;
+                            counterDisplay.textContent = value;
+                        }
+                    };
+                    increaseBtn.onclick = () => {
+                        let value = parseInt(hiddenInput.value);
+                        value++;
+                        hiddenInput.value = value;
+                        counterDisplay.textContent = value;
+                    };
+                    input.appendChild(decreaseBtn);
+                    input.appendChild(counterDisplay);
+                    input.appendChild(increaseBtn);
+                    input.appendChild(hiddenInput);
+                    break;
+                case 'text':
+                    input = document.createElement('textarea');
+                    input.name = item.code;
+                    if (item.size) input.cols = item.size;
+                    if (item.maxSize) input.maxLength = item.maxSize;
+                    break;
+                // Note: 'clickable_image' and 'timer' types are not implemented in this basic version
+            }
+            if (input) div.appendChild(input);
+            return div;
+        }
+
+        function createSection(sectionName, items) {
+            const section = document.createElement('section');
+            const heading = document.createElement('h2');
+            heading.textContent = sectionName;
+            section.appendChild(heading);
+            items.forEach(item => {
+                section.appendChild(createFormElement(item));
+            });
+            return section;
+        }
+
+        form.appendChild(createSection('Pre-match', config.prematch));
+        form.appendChild(createSection('Autonomous', config.auton));
+        form.appendChild(createSection('Teleoperated', config.teleop));
+        form.appendChild(createSection('End Game', config.endgame));
+        form.appendChild(createSection('Post-match', config.postmatch));
+
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.textContent = 'Submit';
+        form.appendChild(submitButton);
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            let output = '';
+            for (let [key, value] of formData.entries()) {
+                output += `${key}: ${value}\n`;
+            }
+            alert('Form submitted!\n\nData:\n' + output);
+        };
+    </script>
+</body>
+</html>
