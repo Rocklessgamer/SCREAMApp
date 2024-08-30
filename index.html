@@ -350,10 +350,23 @@
         const formData = new FormData(form);
         let values = [];
         
-        // Collect all form data
-        for (let [key, value] of formData.entries()) {
-          values.push(value);
-        }
+        // Get all form inputs
+        const inputs = form.querySelectorAll('input, textarea, select');
+        
+        inputs.forEach(input => {
+          if (input.type === 'checkbox') {
+            // Handle checkboxes
+            values.push(input.checked ? 'yes' : 'no');
+          } else if (input.type === 'radio') {
+            // Only add radio button value if it's checked
+            if (input.checked) {
+              values.push(input.value);
+            }
+          } else if (input.type !== 'submit') {
+            // Handle all other input types
+            values.push(input.value);
+          }
+        });
         
         // Join all values with tabs
         let output = values.join('\t');
