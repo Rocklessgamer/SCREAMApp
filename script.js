@@ -1,54 +1,189 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const formContainer = document.getElementById('form-container');
-
-    const config = JSON.parse(config_data);
-
-    const titleElement = document.createElement('h2');
-    titleElement.textContent = config.title;
-    formContainer.appendChild(titleElement);
-
-    // Iterate through prematch, auton, teleop, endgame, and postmatch to create the form fields
-    config.prematch.forEach(item => {
-        const label = document.createElement('label');
-        label.textContent = item.name;
-        formContainer.appendChild(label);
-
-        let input;
-        switch(item.type) {
-            case 'scouter':
-            case 'event':
-            case 'team':
-            case 'match':
-                input = document.createElement('input');
-                input.type = 'text';
-                input.name = item.code;
-                if (item.required === "true") input.required = true;
-                if (item.size) input.size = item.size;
-                if (item.maxSize) input.maxLength = item.maxSize;
-                break;
-            case 'level':
-            case 'robot':
-                input = document.createElement('select');
-                input.name = item.code;
-                for (let [value, text] of Object.entries(item.choices)) {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.innerHTML = text;
-                    input.appendChild(option);
-                }
-                if (item.required === "true") input.required = true;
-                input.value = item.defaultValue;
-                break;
-            // Add more cases for other input types like 'clickable_image', 'bool', 'counter', etc.
-        }
-
-        formContainer.appendChild(input);
-    });
-
-    // Add logic for other sections like auton, teleop, etc.
-
-    // Finally, add a submit button
-    const submitButton = document.createElement('button');
-    submitButton.textContent = 'Submit';
-    formContainer.appendChild(submitButton);
-});
+config_data = 
+{
+  "dataFormat": "tsv",
+  "title": "Scouting PASS 2024",
+  "page_title": "Crescendo",
+  "checkboxAs": "10",
+  "prematch": [
+    { "name": "Scouter Initials",
+      "code": "s",
+      "type": "scouter",
+      "size": 5,
+      "maxSize": 5,
+      "required": "true"
+    },
+    { "name": "Event",
+      "code": "e",
+      "type": "event",
+      "defaultValue": "2023tnkn",
+      "required": "true"
+    },
+    { "name": "Match Level",
+      "code": "l",
+      "type": "level",
+      "choices": {
+        "qm": "Quals<br>",
+        "sf": "Semifinals<br>",
+        "f": "Finals"
+      },
+      "defaultValue": "qm",
+      "required": "true"
+    },
+    { "name": "Match #",
+      "code": "m",
+      "type": "match",
+      "min": 1,
+      "max": 150,
+      "required": "true"
+    },
+    { "name": "Robot",
+      "code": "r",
+      "type": "robot",
+      "choices": {
+        "r1": "Red-1",
+        "b1": "Blue-1<br>",
+        "r2": "Red-2",
+        "b2": "Blue-2<br>",
+        "r3": "Red-3",
+        "b3": "Blue-3"
+      },
+      "required":"true"
+    },
+    { "name": "Team #",
+      "code": "t",
+      "type": "team",
+      "min": 1,
+      "max": 99999
+    },
+    { "name": "Auto Start Position",
+      "code": "as",
+      "type": "clickable_image",
+      "filename": "2024/field_image.png",
+      "clickRestriction": "one",
+      "allowableResponses": "1 12 13 24 25 36 37 48 49 60 61 72",
+      "shape": "circle 5 black red true"
+    }
+  ],
+  "auton": [
+    { "name": "Leave Starting Zone",
+      "code": "al",
+      "type": "bool"
+    },
+    { "name": "Amp Scores",
+      "code": "aas",
+      "type": "counter"
+    },
+    { "name": "Speaker Scores",
+      "code": "ass",
+      "type": "counter"
+    }
+  ],
+  "teleop": [
+    { "name": "Amp Scores",
+      "code": "tas",
+      "type": "counter"
+    },
+    { "name": "Speaker Scores",
+      "code": "tss",
+      "type": "counter"
+    },
+    { "name": "Times Amplified",
+      "code": "tta",
+      "type": "counter"
+    },
+    { "name": "Pickup From",
+      "code": "tpu",
+      "type": "radio",
+      "choices": {
+        "s": "Source<br>",
+        "f": "Floor<br>",
+        "b": "Both<br>",
+        "x": "Not Attempted"
+      },
+      "defaultValue": "x"
+    }
+  ],
+  "endgame": [
+    { "name": "Stage Timer",
+      "code": "dt",
+      "type": "timer"
+    },
+    { "name": "Final Status",
+      "code": "fs",
+      "type":"radio",
+      "choices": {
+        "p": "Parked<br>",
+        "o": "Onstage<br>",
+        "s": "Onstage (Spotlit)<br>",
+        "h": "Harmony<br>",
+        "a": "Attempted but failed<br>",
+        "x": "Not attempted"
+      },
+      "defaultValue": "x"
+    },
+    { "name": "Note in Trap",
+      "code": "nit",
+      "type": "bool"
+    }
+  ],
+  "postmatch": [
+    { "name": "Driver Skill",
+      "code": "ds",
+      "type": "radio",
+      "choices": {
+        "n": "Not Effective<br>",
+        "a": "Average<br>",
+        "v": "Very Effective<br>",
+        "x": "Not Observed"
+      },
+      "defaultValue": "x"
+    },
+    { "name": "Defense Rating",
+      "code": "dr",
+      "type": "radio",
+      "choices": {
+        "b": "Below Average<br>",
+        "a": "Average<br>",
+        "g": "Good<br>",
+        "e": "Excellent<br>",
+        "x": "Did not play defense"
+      },
+      "defaultValue": "x"
+    },
+    { "name": "Speed Rating",
+      "code": "sr",
+      "type": "radio",
+      "choices": {
+        "1": "1 (slow)<br>",
+        "2": "2<br>",
+        "3": "3<br>",
+        "4": "4<br>",
+        "5": "5 (fast)"
+      },
+      "defaultValue":"3"
+    },
+    { "name": "Died/Immobilized",
+      "code": "die",
+      "type": "bool"
+    },
+    { "name": "Tippy<br>(almost tipped over)",
+      "code": "tip",
+      "type": "bool"
+    },
+    { "name": "Dropped Notes (>2)",
+      "code": "dn",
+      "type": "bool"
+    },
+    { "name": "Make good<br>alliance partner?",
+      "tooltip": "Would you want this robot on your alliance in eliminations?",
+      "code": "all",
+      "type": "bool"
+    },
+    { "name": "Comments",
+      "code": "co",
+      "type": "text",
+      "size": 15,
+      "maxSize": 55
+    }
+  ]
+};"
